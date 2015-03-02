@@ -42,11 +42,9 @@ define(['react', 'lodash', 'zepto', './hello.rt'], function (React, _, $, templa
                 });
             }.bind(this));
         },
-        componentDidUpdate: function(prevProps, prevState){
-//            if (this.state.dependenciesData && prevState.selectedPackages !== this.state.selectedPackages){
+        componentDidUpdate: function(){
                 var graphData = this.processData();
                 this.drawGraph(graphData);
-//            }
         },
         processData: function () {
             var jsonData = this.state.dependenciesData;
