@@ -2,8 +2,8 @@
     <h2>Packages graph</h2>
     <div class="controls">
         <label>
-        <input type="checkbox">Show required by
-        <input type="checkbox">Show requires
+            <input type="checkbox" checked="{this.state.showRequiredBy}" onChange="(e)=>this.updateControl(e, 'showRequiredBy')">Show required by
+            <input type="checkbox" checked="{this.state.showRequires}" onChange="(e)=>this.updateControl(e, 'showRequires')">Show requires
         </label>
     </div>
     <div class="options-container">

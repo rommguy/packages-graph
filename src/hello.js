@@ -12,14 +12,19 @@ define(['react', 'lodash', 'zepto', './hello.rt'], function (React, _, $, templa
                 showRequires: false
             };
         },
+        updateControl: function(event, property){
+            var state = _.clone(this.state);
+            state[property] = event.target.checked;
+            this.setState(state);
+        },
         getAvailablePackages: function(){
             if (this.state.dependenciesData){
                 return _.keys(this.state.dependenciesData);
             }
         },
-        packageClicked: function(evt, packageName){
+        packageClicked: function(event, packageName){
             var selectedPackages = _.clone(this.state.selectedPackages);
-            if (evt.target.checked){
+            if (event.target.checked){
                 selectedPackages.push(packageName);
             } else {
                 _.remove(selectedPackages, function(value){
@@ -38,10 +43,10 @@ define(['react', 'lodash', 'zepto', './hello.rt'], function (React, _, $, templa
             }.bind(this));
         },
         componentDidUpdate: function(prevProps, prevState){
-            if (this.state.dependenciesData && prevState.selectedPackages !== this.state.selectedPackages){
+//            if (this.state.dependenciesData && prevState.selectedPackages !== this.state.selectedPackages){
                 var graphData = this.processData();
                 this.drawGraph(graphData);
-            }
+//            }
         },
         processData: function () {
             var jsonData = this.state.dependenciesData;
@@ -49,27 +54,29 @@ define(['react', 'lodash', 'zepto', './hello.rt'], function (React, _, $, templa
             var links = [];
             var maxCounter = 0;
             _.forEach(jsonData, function(dependencies, packageName){
+                var isSourceSelected =  _.contains(this.state.selectedPackages, packageName);
                 nodes[packageName] = nodes[packageName] || {
                     name: packageName,
                     linkCounter: 0
                 };
                 _.forEach(dependencies, function(counter, targetPackage){
-                    if (!counter || !_.contains(this.state.selectedPackages, targetPackage)){
-                        return;
+                    var isTargetSelected = _.contains(this.state.selectedPackages, targetPackage);
+                    if (((this.state.showRequiredBy && isTargetSelected) || (this.state.showRequires && isSourceSelected))
+                        && counter > 0){
+                        nodes[targetPackage] = nodes[targetPackage] || {
+                            name: targetPackage,
+                            linkCounter: 0
+                        };
+                        var link = {
+                            source: nodes[packageName],
+                            target: nodes[targetPackage],
+                            weight: counter
+                        };
+                        maxCounter = Math.max(maxCounter, counter);
+                        links.push(link);
+                        nodes[packageName].linkCounter++;
+                        nodes[targetPackage].linkCounter++;
                     }
-                    nodes[targetPackage] = nodes[targetPackage] || {
-                        name: targetPackage,
-                        linkCounter: 0
-                    };
-                    var link = {
-                        source: nodes[packageName],
-                        target: nodes[targetPackage],
-                        weight: counter
-                    };
-                    maxCounter = Math.max(maxCounter, counter);
-                    links.push(link);
-                    nodes[packageName].linkCounter++;
-                    nodes[targetPackage].linkCounter++;
                 }, this);
             }, this);
 
@@ -105,6 +112,7 @@ define(['react', 'lodash', 'zepto', './hello.rt'], function (React, _, $, templa
                 .nodes(d3.values(nodes))
                 .links(links)
                 .size([width, height])
+                .gravity(0.2)
                 .linkDistance(150)
                 .charge(-1000)
                 .on("tick", tick)
