@@ -7,7 +7,9 @@ define(['react', 'lodash', 'zepto', './hello.rt'], function (React, _, $, templa
             return {
                 graphData: null,
                 dependenciesData: null,
-                selectedPackages: []
+                selectedPackages: [],
+                showRequiredBy: true,
+                showRequires: false
             };
         },
         getAvailablePackages: function(){
@@ -47,9 +49,6 @@ define(['react', 'lodash', 'zepto', './hello.rt'], function (React, _, $, templa
             var links = [];
             var maxCounter = 0;
             _.forEach(jsonData, function(dependencies, packageName){
-//                if (!_.contains(this.state.selectedPackages, packageName)){
-//                    return;
-//                }
                 nodes[packageName] = nodes[packageName] || {
                     name: packageName,
                     linkCounter: 0
@@ -74,9 +73,9 @@ define(['react', 'lodash', 'zepto', './hello.rt'], function (React, _, $, templa
                 }, this);
             }, this);
 
-            nodes = _.omit(nodes, function(nodeData){
-                return nodeData.linkCounter === 0;
-            });
+            nodes = _.omit(nodes, function(nodeData, packageName){
+                return nodeData.linkCounter === 0 && !_.contains(this.state.selectedPackages, packageName);
+            }, this);
 
             return {
                 nodes: nodes,
