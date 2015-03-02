@@ -22,8 +22,13 @@ text {
 .options-container {
     width:150px;
     float: left;
+    padding: 5px;
 }
 
 #graph-container {
     float: left;
+}
+
+.controls {
+    padding: 10px;
 }

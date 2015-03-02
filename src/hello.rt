@@ -1,6 +1,13 @@
 <div>
     <h2>Packages graph</h2>
+    <div class="controls">
+        <label>
+        <input type="checkbox">Show required by
+        <input type="checkbox">Show requires
+        </label>
+    </div>
     <div class="options-container">
+        <p>Select packages</p>
         <label class="package-option" rt-repeat="packageName in this.getAvailablePackages()">
             <input type="checkbox" onChange="(evt) => this.packageClicked(evt,packageName)">{packageName}</input>
         </label>
