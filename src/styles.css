@@ -27,6 +27,8 @@ text {
 
 #graph-container {
     float: left;
+    width: calc(100vw - 200px);
+    height: calc(100vh - 200px);
 }
 
 .controls {
